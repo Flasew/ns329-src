@@ -18,6 +18,7 @@
  * Author: George F. Riley <riley@ece.gatech.edu>
  */
 
+#include <iostream>
 #include "ns3/log.h"
 #include "ns3/address.h"
 #include "ns3/node.h"
@@ -75,6 +76,7 @@ BulkSendApplication::GetTypeId (void)
 BulkSendApplication::BulkSendApplication ()
   : m_socket (0),
     m_connected (false),
+    m_setted (false),
     m_totBytes (0)
 {
   NS_LOG_FUNCTION (this);
@@ -105,51 +107,45 @@ BulkSendApplication::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   m_socket = 0;
+  m_setted = false;
   // chain up
   Application::DoDispose ();
 }
 
+/*
 void 
 BulkSendApplication::MakeSocket (void)
 {
   NS_LOG_FUNCTION(this);
-  if (!m_socket)
+  if (!m_socket && !m_setted)
     {
+
+      std::cout << "Creating socket..." << std::endl;
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
 
-      // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
-      if (m_socket->GetSocketType () != Socket::NS3_SOCK_STREAM &&
-          m_socket->GetSocketType () != Socket::NS3_SOCK_SEQPACKET)
-        {
-          NS_FATAL_ERROR ("Using BulkSend with an incompatible socket type. "
-                          "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "
-                          "In other words, use TCP instead of UDP.");
-        }
+      std::cout << "Socket created..." << std::endl;
 
-      if (Inet6SocketAddress::IsMatchingType (m_peer))
-        {
-          if (m_socket->Bind6 () == -1)
-            {
-              NS_FATAL_ERROR ("Failed to bind socket");
-            }
-        }
-      else if (InetSocketAddress::IsMatchingType (m_peer))
-        {
-          if (m_socket->Bind () == -1)
-            {
-              NS_FATAL_ERROR ("Failed to bind socket");
-            }
-        }
-
-      m_socket->Connect (m_peer);
-      m_socket->ShutdownRecv ();
-      m_socket->SetConnectCallback (
-        MakeCallback (&BulkSendApplication::ConnectionSucceeded, this),
-        MakeCallback (&BulkSendApplication::ConnectionFailed, this));
-      m_socket->SetSendCallback (
-        MakeCallback (&BulkSendApplication::DataSend, this));
     }
 }
+*/
+
+void 
+BulkSendApplication::SetUp (Ptr<Socket> socket, Address address, uint64_t maxBytes)
+{
+  // need to make sure socket passed in is initialized for the
+  // correct thing. Well...
+  if (!m_socket)
+    {
+      m_socket = socket;
+      m_peer   = address;
+      m_maxBytes = maxBytes;
+    }
+  else 
+    {
+      NS_FATAL_ERROR ("Attempting to setup a set socket.");
+    }
+}
+
 // Application Methods
 void BulkSendApplication::StartApplication (void) // Called at time specified by Start
 {
@@ -159,7 +155,9 @@ void BulkSendApplication::StartApplication (void) // Called at time specified by
   if (!m_socket)
     {
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
-
+    }
+  if (!m_setted)
+    {
       // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
       if (m_socket->GetSocketType () != Socket::NS3_SOCK_STREAM &&
           m_socket->GetSocketType () != Socket::NS3_SOCK_SEQPACKET)
@@ -191,6 +189,8 @@ void BulkSendApplication::StartApplication (void) // Called at time specified by
         MakeCallback (&BulkSendApplication::ConnectionFailed, this));
       m_socket->SetSendCallback (
         MakeCallback (&BulkSendApplication::DataSend, this));
+
+      m_setted = true;
     }
   if (m_connected)
     {
