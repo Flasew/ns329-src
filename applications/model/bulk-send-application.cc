@@ -109,6 +109,47 @@ BulkSendApplication::DoDispose (void)
   Application::DoDispose ();
 }
 
+void 
+BulkSendApplication::MakeSocket (void)
+{
+  NS_LOG_FUNCTION(this);
+  if (!m_socket)
+    {
+      m_socket = Socket::CreateSocket (GetNode (), m_tid);
+
+      // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
+      if (m_socket->GetSocketType () != Socket::NS3_SOCK_STREAM &&
+          m_socket->GetSocketType () != Socket::NS3_SOCK_SEQPACKET)
+        {
+          NS_FATAL_ERROR ("Using BulkSend with an incompatible socket type. "
+                          "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "
+                          "In other words, use TCP instead of UDP.");
+        }
+
+      if (Inet6SocketAddress::IsMatchingType (m_peer))
+        {
+          if (m_socket->Bind6 () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
+        }
+      else if (InetSocketAddress::IsMatchingType (m_peer))
+        {
+          if (m_socket->Bind () == -1)
+            {
+              NS_FATAL_ERROR ("Failed to bind socket");
+            }
+        }
+
+      m_socket->Connect (m_peer);
+      m_socket->ShutdownRecv ();
+      m_socket->SetConnectCallback (
+        MakeCallback (&BulkSendApplication::ConnectionSucceeded, this),
+        MakeCallback (&BulkSendApplication::ConnectionFailed, this));
+      m_socket->SetSendCallback (
+        MakeCallback (&BulkSendApplication::DataSend, this));
+    }
+}
 // Application Methods
 void BulkSendApplication::StartApplication (void) // Called at time specified by Start
 {

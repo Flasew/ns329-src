@@ -98,6 +98,10 @@ public:
    * \return pointer to associated socket
    */
   Ptr<Socket> GetSocket (void) const;
+  /**
+   * preset the socket 
+   */
+  void MakeSocket(void);
 
 protected:
   virtual void DoDispose (void);
