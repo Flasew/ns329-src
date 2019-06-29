@@ -130,7 +130,7 @@ BulkSendApplication::MakeSocket (void)
 */
 
 void 
-BulkSendApplication::SetUp (Ptr<Socket> socket, Address address, uint64_t maxBytes)
+BulkSendApplication::SetUp (Ptr<Socket> socket, Address address, uint64_t maxBytes, bool bound)
 {
   // need to make sure socket passed in is initialized for the
   // correct thing. Well...
@@ -139,6 +139,7 @@ BulkSendApplication::SetUp (Ptr<Socket> socket, Address address, uint64_t maxByt
       m_socket = socket;
       m_peer   = address;
       m_maxBytes = maxBytes;
+      m_bound = bound;
     }
   else 
     {
@@ -167,19 +168,22 @@ void BulkSendApplication::StartApplication (void) // Called at time specified by
                           "In other words, use TCP instead of UDP.");
         }
 
-      if (Inet6SocketAddress::IsMatchingType (m_peer))
-        {
-          if (m_socket->Bind6 () == -1)
-            {
-              NS_FATAL_ERROR ("Failed to bind socket");
-            }
-        }
-      else if (InetSocketAddress::IsMatchingType (m_peer))
-        {
-          if (m_socket->Bind () == -1)
-            {
-              NS_FATAL_ERROR ("Failed to bind socket");
-            }
+      if (!m_bound) {
+        if (Inet6SocketAddress::IsMatchingType (m_peer))
+          {
+            if (m_socket->Bind6 () == -1)
+              {
+                NS_FATAL_ERROR ("Failed to bind socket");
+              }
+          }
+        else if (InetSocketAddress::IsMatchingType (m_peer))
+          {
+            if (m_socket->Bind () == -1)
+              {
+                NS_FATAL_ERROR ("Failed to bind socket");
+              }
+          }
+          m_bound = true;
         }
 
       m_socket->Connect (m_peer);
