@@ -128,6 +128,11 @@ PointToPointChannel::GetDevice (std::size_t i) const
   return GetPointToPointDevice (i);
 }
 
+void
+PointToPointChannel::SetDelay (const Time & t) {
+  m_delay = t;
+}
+
 Time
 PointToPointChannel::GetDelay (void) const
 {

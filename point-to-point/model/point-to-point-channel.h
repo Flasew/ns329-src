@@ -100,6 +100,12 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
+  /**
+   * \brief Set the delay associated with this channel
+   * \param t time to set
+   */
+  void SetDelay (const Time & t);
+
 protected:
   /**
    * \brief Get the delay associated with this channel
