@@ -44,6 +44,7 @@ PointToPointHelper::PointToPointHelper ()
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
+  m_orderedChannelFactory.SetTypeId ("ns3::PointToPointOrderedChannel");
 }
 
 void 
@@ -69,10 +70,17 @@ PointToPointHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1
 }
 
 void 
+PointToPointHelper::SetChannelType (std::string name)
+{
+  m_channelType = name;
+}
+
+void 
 PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
   m_remoteChannelFactory.Set (n1, v1);
+  m_orderedChannelFactory.Set (n1, v1);
 }
 
 void 
@@ -241,7 +249,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   // If MPI is enabled, we need to see if both nodes have the same system id 
   // (rank), and the rank is the same as this instance.  If both are true, 
   //use a normal p2p channel, otherwise use a remote channel
-  bool useNormalChannel = true;
+  std::string channelType = m_channelType;
   Ptr<PointToPointChannel> channel = 0;
 
   if (MpiInterface::IsEnabled ())
@@ -251,14 +259,10 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
       uint32_t currSystemId = MpiInterface::GetSystemId ();
       if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
         {
-          useNormalChannel = false;
+          m_channelType = "PointToPointRemoteChannel";
         }
     }
-  if (useNormalChannel)
-    {
-      channel = m_channelFactory.Create<PointToPointChannel> ();
-    }
-  else
+  if (m_channelType == "PointToPointRemoteChannel")
     {
       channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
       Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
@@ -267,6 +271,14 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
       mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devB));
       devA->AggregateObject (mpiRecA);
       devB->AggregateObject (mpiRecB);
+    }
+  else if (m_channelType == "PointToPointOrderedChannel")
+    {
+      channel = m_orderedChannelFactory.Create<PointToPointOrderedChannel> ();
+    }
+  else 
+    {
+      channel = m_channelFactory.Create<PointToPointChannel> ();
     }
 
   devA->Attach (channel);

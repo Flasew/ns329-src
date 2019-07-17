@@ -261,6 +261,13 @@ PointToPointNetDevice::SetDataRate (DataRate bps)
   m_bps = bps;
 }
 
+DateRate
+PointToPointNetDevice::GetDataRate (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_bps;
+}
+
 void
 PointToPointNetDevice::SetInterframeGap (Time t)
 {
