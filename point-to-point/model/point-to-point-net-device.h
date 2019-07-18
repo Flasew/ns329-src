@@ -208,8 +208,6 @@ protected:
   virtual void DoInitialize (void);
   virtual void NotifyNewAggregate (void);
 
-private:
-
   /**
    * \brief Assign operator
    *
@@ -233,8 +231,6 @@ private:
    * \brief Dispose of the object
    */
   virtual void DoDispose (void);
-
-private:
 
   /**
    * \returns the address of the remote device connected to this device
