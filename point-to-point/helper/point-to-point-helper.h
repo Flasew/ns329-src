@@ -91,6 +91,7 @@ public:
    * 
    */
   void SetChannelType (std::string name);
+  void SetDelayDevice ();
 
   /**
    * Set an attribute value to be propagated to each Channel created by the

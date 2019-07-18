@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
+#include "ns3/point-to-point-delayed-net-device.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/point-to-point-remote-channel.h"
 #include "ns3/point-to-point-ordered-channel.h"
@@ -68,7 +69,8 @@ PointToPointHelper::SetQueue (std::string type,
 void 
 PointToPointHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
-  m_deviceFactory.Set (n1, v1);
+  if (n1 != "Delay")
+    m_deviceFactory.Set (n1, v1);
   m_delayedDeviceFactory.Set (n1, v1);
 }
 
@@ -76,6 +78,11 @@ void
 PointToPointHelper::SetChannelType (std::string name)
 {
   m_channelType = name;
+}
+
+void 
+PointToPointHelper::SetDelayDevice () {
+  m_delayedDev = true;
 }
 
 void 
@@ -242,7 +249,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   Ptr<PointToPointNetDevice> devA = 
    m_delayedDev ? 
      m_deviceFactory.Create<PointToPointNetDevice> () :
-     m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> () ;
+     StaticCast<PointToPointNetDevice>(m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> ()) ;
   devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue<Packet> > queueA = m_queueFactory.Create<Queue<Packet> > ();
@@ -250,7 +257,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   Ptr<PointToPointNetDevice> devB = 
    m_delayedDev ? 
      m_deviceFactory.Create<PointToPointNetDevice> () :
-     m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> () ;
+     StaticCast<PointToPointNetDevice>(m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> ()) ;
   devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue<Packet> > queueB = m_queueFactory.Create<Queue<Packet> > ();

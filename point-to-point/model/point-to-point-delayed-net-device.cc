@@ -16,9 +16,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <iostream>
+
 #include "point-to-point-delayed-net-device.h"
 
+#include "ns3/log.h"
+#include "ns3/queue.h"
+#include "ns3/simulator.h"
+#include "ns3/mac48-address.h"
+#include "ns3/llc-snap-header.h"
+#include "ns3/error-model.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/uinteger.h"
+#include "ns3/pointer.h"
+#include "ns3/net-device-queue-interface.h"
+#include "point-to-point-net-device.h"
+#include "point-to-point-channel.h"
+#include "ppp-header.h"
+
 namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("PointToPointDelayedNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED (PointToPointDelayedNetDevice);
@@ -98,7 +115,7 @@ PointToPointDelayedNetDevice::Send (Ptr<Packet> packet, const Address &dest, uin
       // 
       if (m_txMachineState == READY)
         {
-          Simulator::Schedule (m_delay, &PointToPointOrderedChannel::DoTransmit, this);
+          Simulator::Schedule (m_delay, &PointToPointDelayedNetDevice::DoTransmit, this);
         }
       return true;
     }
@@ -122,14 +139,14 @@ PointToPointDelayedNetDevice::TransmitComplete ()
   m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
   
-  Simulator::Schedule (m_delay, &PointToPointOrderedChannel::DoTransmit, this);
+  Simulator::Schedule (m_delay, &PointToPointDelayedNetDevice::DoTransmit, this);
 }
 
 void 
 PointToPointDelayedNetDevice::DoTransmit () 
 {
-  packet = m_queue->Dequeue ();
-  if (p == 0)
+  Ptr<Packet> packet = m_queue->Dequeue ();
+  if (packet == 0)
     {
       NS_LOG_LOGIC ("No pending packets in device queue");
       return;
