@@ -63,14 +63,15 @@ PointToPointOrderedChannel::TransmitStart (
 
   m_packetQueue.push_back(p->Copy());
 
-  Simulator::Schedule (GetDelay(), &PointToPointOrderedChannel::PacketGo, this, src);
+  Simulator::Schedule (m_delay, &PointToPointOrderedChannel::PacketGo, this, src, txTime);
 
   return true;
 }
 
 void
 PointToPointOrderedChannel::PacketGo(
-  Ptr<PointToPointNetDevice> src) 
+  Ptr<PointToPointNetDevice> src,
+  Time txTime) 
 {
   NS_LOG_FUNCTION (this << src);
 
@@ -80,8 +81,9 @@ PointToPointOrderedChannel::PacketGo(
 
   uint32_t wire = src == m_link[0].m_src ? 0 : 1;
   Ptr<Packet> p = m_packetQueue.front();
-  Time txTime = src->GetDataRate().CalculateBytesTxTime (p->GetSize ());
   m_packetQueue.pop_front();
+
+  //std::cout << p->ToString() << std::endl;
 
   Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
                                   txTime, &PointToPointNetDevice::Receive,
