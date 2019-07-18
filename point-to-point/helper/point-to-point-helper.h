@@ -189,10 +189,12 @@ private:
   ObjectFactory m_queueFactory;         //!< Queue Factory
   ObjectFactory m_channelFactory;       //!< Channel Factory
   ObjectFactory m_remoteChannelFactory; //!< Remote Channel Factory
-  ObjectFactory m_orderedChannelFactory; //!< Ordered Channel Factory
+  ObjectFactory m_orderedChannelFactory;//!< Ordered Channel Factory
   ObjectFactory m_deviceFactory;        //!< Device Factory
+  ObjectFactory m_delayedDeviceFactory; //!< Delayed Device Factory
 
-  std::string m_channelType = "PointToPointChannel";
+  std::string m_channelType = "PointToPointChannel"; 
+  bool m_delayedDev = false; 
 };
 
 } // namespace ns3

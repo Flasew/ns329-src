@@ -43,6 +43,7 @@ PointToPointHelper::PointToPointHelper ()
 {
   m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
+  m_delayedDeviceFactory.SetTypeId("ns3::PointToPointDelayedNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
   m_orderedChannelFactory.SetTypeId ("ns3::PointToPointOrderedChannel");
@@ -68,6 +69,7 @@ void
 PointToPointHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
   m_deviceFactory.Set (n1, v1);
+  m_delayedDeviceFactory.Set (n1, v1);
 }
 
 void 
@@ -184,7 +186,7 @@ PointToPointHelper::EnableAsciiInternal (
       asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<Queue<Packet> > (queue, "Dequeue", theStream);
 
       // PhyRxDrop trace source for "d" event
-      asciiTraceHelper.HookDefaultDropSinkWithoutContext<PointToPointNetDevice> (device, "PhyRxDrop", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<PointToPointNetDevice> (device, "PhyRxDrop", theStream); 
 
       return;
     }
@@ -237,12 +239,18 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
 
-  Ptr<PointToPointNetDevice> devA = m_deviceFactory.Create<PointToPointNetDevice> ();
+  Ptr<PointToPointNetDevice> devA = 
+   m_delayedDev ? 
+     m_deviceFactory.Create<PointToPointNetDevice> () :
+     m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> () ;
   devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue<Packet> > queueA = m_queueFactory.Create<Queue<Packet> > ();
   devA->SetQueue (queueA);
-  Ptr<PointToPointNetDevice> devB = m_deviceFactory.Create<PointToPointNetDevice> ();
+  Ptr<PointToPointNetDevice> devB = 
+   m_delayedDev ? 
+     m_deviceFactory.Create<PointToPointNetDevice> () :
+     m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> () ;
   devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue<Packet> > queueB = m_queueFactory.Create<Queue<Packet> > ();
