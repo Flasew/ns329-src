@@ -79,7 +79,7 @@ private:
    */
   void PacketGo(Ptr<PointToPointNetDevice> src);
 
-  std::list<Ptr<const Packet>> m_packetQueue;
+  std::list<Ptr<Packet>> m_packetQueue;
 };
 
 } // namespace ns3

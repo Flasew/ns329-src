@@ -261,7 +261,7 @@ PointToPointNetDevice::SetDataRate (DataRate bps)
   m_bps = bps;
 }
 
-DateRate
+DataRate
 PointToPointNetDevice::GetDataRate (void)
 {
   NS_LOG_FUNCTION (this);
