@@ -245,19 +245,21 @@ NetDeviceContainer
 PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
+  
+  //std::cout << "delayedDev: " << m_delayedDev << std::endl;
 
   Ptr<PointToPointNetDevice> devA = 
    m_delayedDev ? 
-     m_deviceFactory.Create<PointToPointNetDevice> () :
-     StaticCast<PointToPointNetDevice>(m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> ()) ;
+     StaticCast<PointToPointNetDevice>(m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> ()) :
+     m_deviceFactory.Create<PointToPointNetDevice> ();
   devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue<Packet> > queueA = m_queueFactory.Create<Queue<Packet> > ();
   devA->SetQueue (queueA);
   Ptr<PointToPointNetDevice> devB = 
    m_delayedDev ? 
-     m_deviceFactory.Create<PointToPointNetDevice> () :
-     StaticCast<PointToPointNetDevice>(m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> ()) ;
+     StaticCast<PointToPointNetDevice>(m_delayedDeviceFactory.Create<PointToPointDelayedNetDevice> ()) :
+     m_deviceFactory.Create<PointToPointNetDevice> (); 
   devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue<Packet> > queueB = m_queueFactory.Create<Queue<Packet> > ();
