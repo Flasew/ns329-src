@@ -376,7 +376,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
 
-  // std::cout << packet->ToString() << std::endl;
+  //std::cout << packet->ToString() << std::endl;
   uint16_t protocol = 0;
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
@@ -557,6 +557,7 @@ PointToPointNetDevice::Send (
   NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+  std::cout << packet->ToString() << std::endl;
 
   //
   // If IsLinkUp() is false it means there is no channel to send any packet 

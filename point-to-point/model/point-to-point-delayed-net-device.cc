@@ -145,6 +145,7 @@ PointToPointDelayedNetDevice::TransmitComplete ()
 void 
 PointToPointDelayedNetDevice::DoTransmit () 
 {
+  if (m_txMachineState == BUSY) return;
   Ptr<Packet> packet = m_queue->Dequeue ();
   if (packet == 0)
     {

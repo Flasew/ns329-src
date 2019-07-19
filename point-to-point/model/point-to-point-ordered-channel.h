@@ -77,9 +77,9 @@ private:
    * \param p Packet to transmit
    * \param src Source PointToPointNetDevice
    */
-  void PacketGo(Ptr<PointToPointNetDevice> src, Time txTime);
+  void PacketGo(Ptr<PointToPointNetDevice> src, uint32_t wire, Time txTime, Time totDelay);
 
-  std::list<Ptr<Packet>> m_packetQueue;
+  std::list<Ptr<Packet>> * m_packetQueues;
 };
 
 } // namespace ns3
