@@ -65,20 +65,16 @@ PointToPointOrderedChannel::TransmitStart (
 
   uint32_t wire = src == m_link[0].m_src ? 0 : 1;
   m_packetQueues[wire].push_back(p->Copy());
-  Time totDelay = m_delay+txTime;
-  Simulator::Schedule (totDelay, &PointToPointOrderedChannel::PacketGo, this, src, wire, txTime, totDelay);
+  Time totDelay = m_delay + txTime;
+  Simulator::Schedule (totDelay, &PointToPointOrderedChannel::PacketGo, this, wire);
 
   return true;
 }
 
 void
-PointToPointOrderedChannel::PacketGo(
-  Ptr<PointToPointNetDevice> src,
-  uint32_t wire, 
-  Time txTime,
-  Time totDelay) 
+PointToPointOrderedChannel::PacketGo(uint32_t wire)
 {
-  NS_LOG_FUNCTION (this << src);
+  NS_LOG_FUNCTION (this << wire);
 
   NS_ASSERT (m_link[0].m_state != INITIALIZING);
   NS_ASSERT (m_link[1].m_state != INITIALIZING);
@@ -92,10 +88,10 @@ PointToPointOrderedChannel::PacketGo(
   Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
                                   Time(Seconds(0)), &PointToPointNetDevice::Receive,
                                   m_link[wire].m_dst, p->Copy ());
-  //m_link[wire].m_dst->Receive(p);
+  //m_link[wire].m_dst->Receive(p->Copy());
 
   // Call the tx anim callback on the net device
-  m_txrxPointToPoint (p, src, m_link[wire].m_dst, txTime, totDelay);
+  //m_txrxPointToPoint (p, src, m_link[wire].m_dst, txTime, totDelay);
 }
 
 } // namespace ns3

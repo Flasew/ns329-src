@@ -77,7 +77,7 @@ private:
    * \param p Packet to transmit
    * \param src Source PointToPointNetDevice
    */
-  void PacketGo(Ptr<PointToPointNetDevice> src, uint32_t wire, Time txTime, Time totDelay);
+  void PacketGo(uint32_t wire);
 
   std::list<Ptr<Packet>> * m_packetQueues;
 };
