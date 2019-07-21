@@ -84,7 +84,7 @@ PointToPointOrderedChannel::PacketGo(uint32_t wire)
   Ptr<Packet> p = m_packetQueues[wire].front();
   m_packetQueues[wire].pop_front();
 
-  std::cout << wire << ": " << p->ToString() << std::endl;
+  //std::cout << wire << ": " << p->ToString() << std::endl;
 
   Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
                                   Time(Seconds(0)), &PointToPointNetDevice::Receive,
