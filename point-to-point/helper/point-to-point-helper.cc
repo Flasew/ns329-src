@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
+#include "ns3/point-to-point-delayed-net-device.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/point-to-point-remote-channel.h"
 #include "ns3/point-to-point-ordered-channel.h"
@@ -43,6 +44,7 @@ PointToPointHelper::PointToPointHelper ()
 {
   m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
+  m_delayedDeviceFactory.SetTypeId("ns3::PointToPointDelayedNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
   m_orderedChannelFactory.SetTypeId ("ns3::PointToPointOrderedChannel");
@@ -67,7 +69,20 @@ PointToPointHelper::SetQueue (std::string type,
 void 
 PointToPointHelper::SetDeviceAttribute (std::string n1, const AttributeValue &v1)
 {
-  m_deviceFactory.Set (n1, v1);
+  if (n1 != "Delay")
+    m_deviceFactory.Set (n1, v1);
+  m_delayedDeviceFactory.Set (n1, v1);
+}
+
+void 
+PointToPointHelper::SetChannelType (std::string name)
+{
+  m_channelType = name;
+}
+
+void 
+PointToPointHelper::SetDelayDevice () {
+  m_delayedDev = true;
 }
 
 void 
@@ -236,7 +251,6 @@ NetDeviceContainer
 PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
-  
 
   Ptr<PointToPointNetDevice> devA = 
      m_deviceFactory.Create<PointToPointNetDevice> ();

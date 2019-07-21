@@ -89,10 +89,6 @@ PointToPointOrderedChannel::PacketGo(uint32_t wire)
   Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
                                   Time(Seconds(0)), &PointToPointNetDevice::Receive,
                                   m_link[wire].m_dst, p->Copy ());
-  //m_link[wire].m_dst->Receive(p->Copy());
-
-  // Call the tx anim callback on the net device
-  //m_txrxPointToPoint (p, src, m_link[wire].m_dst, txTime, totDelay);
 }
 
 } // namespace ns3

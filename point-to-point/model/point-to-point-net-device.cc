@@ -261,6 +261,13 @@ PointToPointNetDevice::SetDataRate (DataRate bps)
   m_bps = bps;
 }
 
+DataRate
+PointToPointNetDevice::GetDataRate (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_bps;
+}
+
 void
 PointToPointNetDevice::SetInterframeGap (Time t)
 {
@@ -368,6 +375,8 @@ void
 PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
+
+  // std::cout << packet->ToString() << std::endl;
   uint16_t protocol = 0;
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
