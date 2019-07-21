@@ -46,10 +46,12 @@ PointToPointOrderedChannel::GetTypeId (void)
 PointToPointOrderedChannel::PointToPointOrderedChannel ()
   : PointToPointChannel ()
 {
+  m_packetQueues = new std::list<Ptr<Packet>>[2];
 }
 
 PointToPointOrderedChannel::~PointToPointOrderedChannel ()
 {
+  delete[] m_packetQueues;
 }
 
 bool
@@ -61,36 +63,32 @@ PointToPointOrderedChannel::TransmitStart (
   NS_LOG_FUNCTION (this << p << src);
   NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
 
-  m_packetQueue.push_back(p->Copy());
+  NS_ASSERT (m_link[0].m_state != INITIALIZING);
+  NS_ASSERT (m_link[1].m_state != INITIALIZING);
 
-  Simulator::Schedule (m_delay, &PointToPointOrderedChannel::PacketGo, this, src, txTime);
+  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
+  m_packetQueues[wire].push_back(p->Copy());
+  Time totDelay = m_delay + txTime;
+  Simulator::Schedule (totDelay, &PointToPointOrderedChannel::PacketGo, this, wire);
 
   return true;
 }
 
 void
-PointToPointOrderedChannel::PacketGo(
-  Ptr<PointToPointNetDevice> src,
-  Time txTime) 
+PointToPointOrderedChannel::PacketGo(uint32_t wire)
 {
-  NS_LOG_FUNCTION (this << src);
+  NS_LOG_FUNCTION (this << wire);
 
-  NS_ASSERT (m_link[0].m_state != INITIALIZING);
-  NS_ASSERT (m_link[1].m_state != INITIALIZING);
-  NS_ASSERT (m_packetQueue.size() != 0);
+  NS_ASSERT (m_packetQueues[wire].size() != 0);
 
-  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
-  Ptr<Packet> p = m_packetQueue.front();
-  m_packetQueue.pop_front();
+  Ptr<Packet> p = m_packetQueues[wire].front();
+  m_packetQueues[wire].pop_front();
 
-  //std::cout << p->ToString() << std::endl;
+  //std::cout << wire << ": " << p->ToString() << std::endl;
 
   Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
-                                  txTime, &PointToPointNetDevice::Receive,
+                                  Time(Seconds(0)), &PointToPointNetDevice::Receive,
                                   m_link[wire].m_dst, p->Copy ());
-
-  // Call the tx anim callback on the net device
-  m_txrxPointToPoint (p, src, m_link[wire].m_dst, txTime, txTime + m_delay);
 }
 
 } // namespace ns3

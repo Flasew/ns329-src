@@ -91,7 +91,6 @@ public:
    * 
    */
   void SetChannelType (std::string name);
-  void SetDelayDevice ();
 
   /**
    * Set an attribute value to be propagated to each Channel created by the
@@ -192,7 +191,6 @@ private:
   ObjectFactory m_remoteChannelFactory; //!< Remote Channel Factory
   ObjectFactory m_orderedChannelFactory;//!< Ordered Channel Factory
   ObjectFactory m_deviceFactory;        //!< Device Factory
-  ObjectFactory m_delayedDeviceFactory; //!< Delayed Device Factory
 
   std::string m_channelType = "PointToPointChannel"; 
   bool m_delayedDev = false; 
