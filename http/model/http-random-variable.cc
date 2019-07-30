@@ -62,6 +62,10 @@ namespace http {
 //HttpRandomVariableBase
 HttpRandomVariableBase::HttpRandomVariableBase ()
 {
+  m_normal = CreateObject<NormalRandomVariable>();
+  m_uniform = CreateObject<UniformRandomVariable>();
+  m_gamma = CreateObject<GammaRandomVariable>();
+  m_weibull = CreateObject<WeibullRandomVariable>();
 }
 
 HttpRandomVariableBase::~HttpRandomVariableBase ()
@@ -104,7 +108,7 @@ uint32_t HttpRandomVariableBase::rBernoulli (double p)
   double x;
   uint32_t z;
 
-  x = m_uniform.GetValue ();
+  x = m_uniform->GetValue ();
   if (x <= p)
     {
       z = 1;
@@ -245,7 +249,7 @@ double fArimaImpl::NextLow ()
       v0 = exp (v0);
       // phi[0] is not used, so we use it for vt
       m_phi[0] = v0;
-      m_x[m_t] = m_normal.GetValue () * pow (v0, 0.5);
+      m_x[m_t] = m_normal->GetValue () * pow (v0, 0.5);
     }
   else if (m_t < m_N)
     {
@@ -275,7 +279,7 @@ double fArimaImpl::NextLow ()
     }
 
   // get xt
-  xt = m_normal.GetValue () * pow (m_phi[0], 0.5) + mt;
+  xt = m_normal->GetValue () * pow (m_phi[0], 0.5) + mt;
   m_x[m_t % m_N] = xt;
 
   /**
@@ -318,7 +322,7 @@ double fArimaImpl::GetValue ()
     }
 
   // get xt
-  xt = m_normal.GetValue () * pow (m_phi[0], 0.5) + mt;
+  xt = m_normal->GetValue () * pow (m_phi[0], 0.5) + mt;
   m_x[m_tmod] = xt;
 
   /**
@@ -366,7 +370,7 @@ double fArimaImpl::Next ()
     }
 
   // get xt
-  xt = m_normal.GetValue () * pow (m_phi[0], 0.5) + mt;
+  xt = m_normal->GetValue () * pow (m_phi[0], 0.5) + mt;
   m_x[m_tmod] = xt;
 
   /**
@@ -465,7 +469,7 @@ uint32_t HttpFileSizeRandomVariableImpl::ResponseSize (uint32_t state)
 {
   double yt, p;
 
-  p = m_uniform.GetValue ();
+  p = m_uniform->GetValue ();
   if (state == 1)
     {
       p = log (1 - p) / LOG2;
@@ -562,7 +566,7 @@ double HttpFileSizeRandomVariableImpl::GetValue ()
     {
       double yx;
       yx = m_fArima->Next ();
-      yx = yx * m_sigmaEpsilon + m_normal.GetValue () * m_sigmaNoise;
+      yx = yx * m_sigmaEpsilon + m_normal->GetValue () * m_sigmaNoise;
       yt = RequestSize (pNorm (yx));
 
       // adjust by m_const and m_mean (by default, this does nothing since m_const is set as 1)
@@ -882,8 +886,8 @@ const double HttpObjsPerPageRandomVariableImpl::SCALE_NTRANSFER = 1.578;
 //Http TimeBtwnPages Random Variable
 HttpTimeBtwnPagesRandomVariableImpl::HttpTimeBtwnPagesRandomVariableImpl ()
 {
-  m_loc_b = m_normal.GetValue () * sqrt (V_LOC_B) + M_LOC_B;
-  m_scale2_b = m_gamma.GetValue (SHAPE_SCALE2_B, 1 / RATE_SCALE2_B);
+  m_loc_b = m_normal->GetValue () * sqrt (V_LOC_B) + M_LOC_B;
+  m_scale2_b = m_gamma->GetValue (SHAPE_SCALE2_B, 1 / RATE_SCALE2_B);
 }
 
 HttpTimeBtwnPagesRandomVariableImpl::~HttpTimeBtwnPagesRandomVariableImpl ()
@@ -892,7 +896,7 @@ HttpTimeBtwnPagesRandomVariableImpl::~HttpTimeBtwnPagesRandomVariableImpl ()
 
 double HttpTimeBtwnPagesRandomVariableImpl::GetValue (void)
 {
-  return (pow (2.0, m_loc_b + sqrt (m_scale2_b) * m_normal.GetValue () * sqrt (V_ERROR_B)));
+  return (pow (2.0, m_loc_b + sqrt (m_scale2_b) * m_normal->GetValue () * sqrt (V_ERROR_B)));
 }
 
 double HttpTimeBtwnPagesRandomVariableImpl::Average ()
@@ -911,8 +915,8 @@ const double HttpTimeBtwnPagesRandomVariableImpl::V_ERROR_B = 1.21;
 //Http TimeBtwnObjs Random Variable
 HttpTimeBtwnObjsRandomVariableImpl::HttpTimeBtwnObjsRandomVariableImpl ()
 {
-  m_loc_w = m_normal.GetValue () * sqrt (V_LOC_W) + M_LOC_W;
-  m_scale2_w = m_gamma.GetValue (SHAPE_SCALE2_W, 1 / RATE_SCALE2_W);
+  m_loc_w = m_normal->GetValue () * sqrt (V_LOC_W) + M_LOC_W;
+  m_scale2_w = m_gamma->GetValue (SHAPE_SCALE2_W, 1 / RATE_SCALE2_W);
 }
 
 HttpTimeBtwnObjsRandomVariableImpl::~HttpTimeBtwnObjsRandomVariableImpl ()
@@ -921,7 +925,7 @@ HttpTimeBtwnObjsRandomVariableImpl::~HttpTimeBtwnObjsRandomVariableImpl ()
 
 double HttpTimeBtwnObjsRandomVariableImpl::GetValue (void)
 {
-  return (pow (2.0, m_loc_w + sqrt (m_scale2_w) * m_normal.GetValue () * sqrt (V_ERROR_W)));
+  return (pow (2.0, m_loc_w + sqrt (m_scale2_w) * m_normal->GetValue () * sqrt (V_ERROR_W)));
 }
 
 double HttpTimeBtwnObjsRandomVariableImpl::Average ()

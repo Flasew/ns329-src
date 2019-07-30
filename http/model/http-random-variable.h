@@ -153,10 +153,10 @@ protected:
   /**
    * Couple of random variable functions
    */
-  UniformRandomVariable m_uniform;
-  WeibullRandomVariable m_weibull;
-  NormalRandomVariable m_normal;
-  GammaRandomVariable m_gamma;
+  Ptr<UniformRandomVariable> m_uniform;
+  Ptr<WeibullRandomVariable> m_weibull;
+  Ptr<NormalRandomVariable> m_normal;
+  Ptr<GammaRandomVariable> m_gamma;
 };
 
 /**

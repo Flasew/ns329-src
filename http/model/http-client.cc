@@ -115,20 +115,36 @@ HttpClient::GetTypeId (void)
                    UintegerValue (2),
                    MakeUintegerAccessor (&HttpClient::m_userNumObjects),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("UserServerDelay", "User defined server delay",
-                   DoubleValue (0.1),
-                   MakeDoubleAccessor (&HttpClient::m_userServerDelay),
+    .AddAttribute ("UserServerDelayMean", "User defined server delay mean",
+                   DoubleValue (0.001),
+                   MakeDoubleAccessor (&HttpClient::m_userServerDelayMean),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("UserPageRequestGap", "User defined request gap for each web page",
-                   DoubleValue (0.2),
-                   MakeDoubleAccessor (&HttpClient::m_userPageRequestGap),
+    .AddAttribute ("UserServerDelaySD", "User defined server delay sd",
+                   DoubleValue (0.0002),
+                   MakeDoubleAccessor (&HttpClient::m_userServerDelaySD),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("UserObjectRequestGap", "User defined request gap among web objects in one page",
+    // .AddAttribute ("UserServerDelayBound", "User defined server delay bound",
+    //                DoubleValue (0.1),
+    //                MakeDoubleAccessor (&HttpClient::m_userServerDelaySD),
+    //                MakeDoubleChecker<double> ())
+    .AddAttribute ("UserPageRequestGapMean", "User defined request gap for each web page mean",
                    DoubleValue (0.01),
-                   MakeDoubleAccessor (&HttpClient::m_userObjectRequestGap),
+                   MakeDoubleAccessor (&HttpClient::m_userPageRequestGapMean),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("UserPageRequestGapSD", "User defined request gap for each web page SD",
+                   DoubleValue (0.002),
+                   MakeDoubleAccessor (&HttpClient::m_userPageRequestGapSD),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("UserObjectRequestGapMean", "User defined request gap among web objects in one page mean",
+                   DoubleValue (0.0005),
+                   MakeDoubleAccessor (&HttpClient::m_userObjectRequestGapMean),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("UserObjectRequestGapSD", "User defined request gap among web objects in one page SD",
+                   DoubleValue (0.00025),
+                   MakeDoubleAccessor (&HttpClient::m_userObjectRequestGapSD),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("UserRequestSize", "User defined size of the request",
-                   UintegerValue (100),
+                   UintegerValue (500),
                    MakeUintegerAccessor (&HttpClient::m_userRequestSize),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("UserResponseSize", "User defined size of the response",
@@ -143,6 +159,7 @@ HttpClient::HttpClient ()
 {
   /// Only test for if this is the first connection or not
   m_realFirstObject = true;
+  m_normal =  CreateObject<NormalRandomVariable> ();
 }
 
 HttpClient::~HttpClient ()
@@ -168,6 +185,9 @@ void
 HttpClient::StartApplication ()     // Called at time specified by Start
 {
   NS_LOG_FUNCTION (this);
+
+  // m_userServerDelayRVar = NormalRandomVariable(m_userServerDelayMean, m_userServerDelaySD, m_userServerDelayMean)
+
   // Create the socket if not already
   if (!m_socket)
     {
@@ -640,13 +660,15 @@ HttpClient::AduGeneration ()
               ADU requestAdu;
               requestAdu.size = m_userRequestSize;
               requestAdu.messageType = ADU::REQUEST;
-              requestAdu.requestObjectGapTime = m_userObjectRequestGap;
+              requestAdu.requestObjectGapTime = 
+                m_normal->GetValue(m_userObjectRequestGapMean, m_userObjectRequestGapSD, m_userObjectRequestGapMean);
 
               /// This part is the response ADU
               ADU responseAdu;
               responseAdu.size = m_userResponseSize;
               responseAdu.messageType = ADU::RESPONSE;
-              responseAdu.serverDelayTime = m_userServerDelay;
+              responseAdu.serverDelayTime = 
+                m_normal->GetValue(m_userServerDelayMean, m_userServerDelaySD, m_userServerDelayMean);
 
               NS_LOG_DEBUG ("i " << i << " pages " << m_userNumPages << " j " << j << " m_objectsPerPage[i] " << m_objectsPerPage[i]);
               if (i == (m_userNumPages - 1) && j == (m_objectsPerPage[i] - 1))
@@ -659,7 +681,8 @@ HttpClient::AduGeneration ()
                   m_lastObject = true;
                 }
               /// Construct and start the Adu container
-              ConstructAndStartAdu (requestAdu, responseAdu, m_userPageRequestGap, container);
+              auto requestGap = m_normal->GetValue(m_userPageRequestGapMean, m_userPageRequestGapSD, m_userPageRequestGapMean);
+              ConstructAndStartAdu (requestAdu, responseAdu, requestGap, container);
             }
         }
     }

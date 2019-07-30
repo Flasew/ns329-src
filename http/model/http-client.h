@@ -238,9 +238,14 @@ private:
    */
   uint32_t              m_userRequestSize;              ///< The user defined request size
   uint32_t              m_userResponseSize;             ///< The user defined response size
-  double                m_userServerDelay;              ///< The user defined server delay
-  double                m_userPageRequestGap;           ///< The user defined request gap between web page
-  double                m_userObjectRequestGap;         ///< The user defined request gap between web object in one page
+  double                z;              ///< The user defined server delay
+  double                m_userPageRequestGapMean;           ///< The user defined request gap between web page
+  double                m_userObjectRequestGapMean;         ///< The user defined request gap between web object in one page
+  double                m_userServerDelayMean;               ///< The user defined server delay
+  double                m_userServerDelaySD;               ///< The user defined server delay
+  double                m_userPageRequestGapSD;            ///< The user defined request gap between web page
+  double                m_userObjectRequestGapSD;          ///< The user defined request gap between web object in one page
+  Ptr<NormalRandomVariable>  m_normal;
   uint32_t              m_userNumPages;                    ///< The user defined number of pages
   uint32_t              m_userNumObjects;                  ///< The user defined number of objects per page
 };
