@@ -80,7 +80,6 @@ private:
   void PacketGo(uint32_t wire);
 
   std::list<Ptr<Packet>> * m_packetQueues;
-
 };
 
 } // namespace ns3

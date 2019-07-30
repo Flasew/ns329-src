@@ -96,12 +96,6 @@ public:
   void SetDataRate (DataRate bps);
 
   /**
-   * Get the Data Rate used for transmission of packets. 
-   * \return bps the data rate at which this object operates
-   */
-  DataRate GetDataRate (void);
-
-  /**
    * Set the interframe gap used to separate packets.  The interframe gap
    * defines the minimum space required between packets sent by this device.
    *
@@ -208,6 +202,8 @@ protected:
   virtual void DoInitialize (void);
   virtual void NotifyNewAggregate (void);
 
+private:
+
   /**
    * \brief Assign operator
    *
@@ -231,6 +227,8 @@ protected:
    * \brief Dispose of the object
    */
   virtual void DoDispose (void);
+
+private:
 
   /**
    * \returns the address of the remote device connected to this device

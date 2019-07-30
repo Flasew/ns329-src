@@ -296,7 +296,7 @@ private:
   /**
    * Random variable for determining main object size (in bytes).
    */
-  Ptr<LogNormalRandomVariable>    m_mainObjectSizeRng;
+  Ptr<NormalRandomVariable>    m_mainObjectSizeRng;
   /// Mean parameter for #m_mainObjectSizeRng;
   uint32_t                        m_mainObjectSizeMean;
   /// Standard deviation parameter for #m_mainObjectSizeRng;
@@ -319,7 +319,7 @@ private:
   /**
    * Random variable for determining embedded object size (in bytes).
    */
-  Ptr<LogNormalRandomVariable>    m_embeddedObjectSizeRng;
+  Ptr<NormalRandomVariable>    m_embeddedObjectSizeRng;
   /// Mean parameter for #m_embeddedObjectSizeRng.
   uint32_t                        m_embeddedObjectSizeMean;
   /// Standard deviation parameter for #m_embeddedObjectSizeRng.

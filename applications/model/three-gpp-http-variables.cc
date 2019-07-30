@@ -41,9 +41,9 @@ ThreeGppHttpVariables::ThreeGppHttpVariables ()
   m_mtuSizeRng = CreateObject<UniformRandomVariable> ();
   m_requestSizeRng = CreateObject<ConstantRandomVariable> ();
   m_mainObjectGenerationDelayRng = CreateObject<ConstantRandomVariable> ();
-  m_mainObjectSizeRng = CreateObject<LogNormalRandomVariable> ();
+  m_mainObjectSizeRng = CreateObject<NormalRandomVariable> ();
   m_embeddedObjectGenerationDelayRng = CreateObject<ConstantRandomVariable> ();
-  m_embeddedObjectSizeRng = CreateObject<LogNormalRandomVariable> ();
+  m_embeddedObjectSizeRng = CreateObject<NormalRandomVariable> ();
   m_numOfEmbeddedObjectsRng = CreateObject<ParetoRandomVariable> ();
   m_readingTimeRng = CreateObject<ExponentialRandomVariable> ();
   m_parsingTimeRng = CreateObject<ExponentialRandomVariable> ();
@@ -377,8 +377,8 @@ ThreeGppHttpVariables::UpdateMainObjectMuAndSigma (void)
   const double mu = std::log (m_mainObjectSizeMean) - (0.5 * a);
   const double sigma = std::sqrt (a);
   NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_mainObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_mainObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  m_mainObjectSizeRng->SetAttribute ("Mean", DoubleValue (mu));
+  m_mainObjectSizeRng->SetAttribute ("Variance", DoubleValue (sigma * sigma));
 }
 
 void
@@ -391,8 +391,8 @@ ThreeGppHttpVariables::UpdateEmbeddedObjectMuAndSigma (void)
   const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
   const double sigma = std::sqrt (a);
   NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_embeddedObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_embeddedObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  m_embeddedObjectSizeRng->SetAttribute ("Mean", DoubleValue (mu));
+  m_embeddedObjectSizeRng->SetAttribute ("Variance", DoubleValue (sigma * sigma));
 }
 
 void
