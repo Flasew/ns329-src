@@ -371,11 +371,13 @@ void
 ThreeGppHttpVariables::UpdateMainObjectMuAndSigma (void)
 {
   NS_LOG_FUNCTION (this);
-  const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_mainObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_mainObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
+  //const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
+  //const double a2 = std::pow (m_mainObjectSizeMean, 2.0);
+  //const double a = std::log (1.0 + (a1 / a2));
+  //const double mu = std::log (m_mainObjectSizeMean) - (0.5 * a);
+  //const double sigma = std::sqrt (a);
+  const double mu = m_mainObjectSizeMean;
+  const double sigma = m_mainObjectSizeStdDev;
   NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
   m_mainObjectSizeRng->SetAttribute ("Mean", DoubleValue (mu));
   m_mainObjectSizeRng->SetAttribute ("Variance", DoubleValue (sigma * sigma));
@@ -385,11 +387,13 @@ void
 ThreeGppHttpVariables::UpdateEmbeddedObjectMuAndSigma (void)
 {
   NS_LOG_FUNCTION (this);
-  const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
+  //const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
+  //const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
+  //const double a = std::log (1.0 + (a1 / a2));
+  //const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
+  //const double sigma = std::sqrt (a);
+  const double mu = m_embeddedObjectSizeMean;
+  const double sigma = m_embeddedObjectSizeStdDev;
   NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
   m_embeddedObjectSizeRng->SetAttribute ("Mean", DoubleValue (mu));
   m_embeddedObjectSizeRng->SetAttribute ("Variance", DoubleValue (sigma * sigma));
