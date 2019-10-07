@@ -227,6 +227,7 @@ def build(bld):
         'model/rip.cc',
         'model/rip-header.cc',
         'helper/rip-helper.cc',
+        'model/simple-tdtcp-socket-base.cc',
         ]
 
     internet_test = bld.create_ns3_module_test_library('internet')
@@ -293,6 +294,7 @@ def build(bld):
         'test/tcp-datasentcb-test.cc',
         'test/ipv4-rip-test.cc',
         'test/tcp-close-test.cc',
+        'test/icmp-test.cc',
         ]
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
@@ -314,12 +316,16 @@ def build(bld):
         # used by routing
         'model/ipv4-interface.h',
         'model/ipv4-l3-protocol.h',
+        'model/ipv4-end-point.h',
+        'model/ipv4-end-point-demux.h',
         'model/ipv6-l3-protocol.h',
         'model/ipv6-extension.h',
         'model/ipv6-extension-demux.h',
         'model/ipv6-extension-header.h',
         'model/ipv6-option.h',
         'model/ipv6-option-header.h',
+        'model/ipv6-end-point.h',
+        'model/ipv6-end-point-demux.h',
         'model/arp-l3-protocol.h',
         'model/udp-l4-protocol.h',
         'model/tcp-l4-protocol.h',
@@ -410,6 +416,7 @@ def build(bld):
         'model/rip.h',
         'model/rip-header.h',
         'helper/rip-helper.h',
+        'model/simple-tdtcp-socket-base.h',
        ]
 
     if bld.env['NSC_ENABLED']:

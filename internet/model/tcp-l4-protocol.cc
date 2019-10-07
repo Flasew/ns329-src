@@ -41,6 +41,7 @@
 #include "ipv6-routing-protocol.h"
 #include "tcp-socket-factory-impl.h"
 #include "tcp-socket-base.h"
+#include "simple-tdtcp-socket-base.h"
 #include "tcp-congestion-ops.h"
 #include "tcp-recovery-ops.h"
 #include "rtt-estimator.h"
@@ -198,7 +199,8 @@ TcpL4Protocol::CreateSocket (TypeId congestionTypeId, TypeId recoveryTypeId)
   recoveryAlgorithmFactory.SetTypeId (recoveryTypeId);
 
   Ptr<RttEstimator> rtt = rttFactory.Create<RttEstimator> ();
-  Ptr<TcpSocketBase> socket = CreateObject<TcpSocketBase> ();
+  Ptr<SimpleTdTcpSocketBase> socket = CreateObject<SimpleTdTcpSocketBase> ();
+  //Ptr<TcpSocketBase> socket = CreateObject<TcpSocketBase> ();
   Ptr<TcpCongestionOps> algo = congestionAlgorithmFactory.Create<TcpCongestionOps> ();
   Ptr<TcpRecoveryOps> recovery = recoveryAlgorithmFactory.Create<TcpRecoveryOps> ();
 
