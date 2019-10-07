@@ -41,9 +41,9 @@ ThreeGppHttpVariables::ThreeGppHttpVariables ()
   m_mtuSizeRng = CreateObject<UniformRandomVariable> ();
   m_requestSizeRng = CreateObject<ConstantRandomVariable> ();
   m_mainObjectGenerationDelayRng = CreateObject<ConstantRandomVariable> ();
-  m_mainObjectSizeRng = CreateObject<LogNormalRandomVariable> ();
+  m_mainObjectSizeRng = CreateObject<NormalRandomVariable> ();
   m_embeddedObjectGenerationDelayRng = CreateObject<ConstantRandomVariable> ();
-  m_embeddedObjectSizeRng = CreateObject<LogNormalRandomVariable> ();
+  m_embeddedObjectSizeRng = CreateObject<NormalRandomVariable> ();
   m_numOfEmbeddedObjectsRng = CreateObject<ParetoRandomVariable> ();
   m_readingTimeRng = CreateObject<ExponentialRandomVariable> ();
   m_parsingTimeRng = CreateObject<ExponentialRandomVariable> ();
@@ -371,28 +371,32 @@ void
 ThreeGppHttpVariables::UpdateMainObjectMuAndSigma (void)
 {
   NS_LOG_FUNCTION (this);
-  const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_mainObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_mainObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
+  //const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
+  //const double a2 = std::pow (m_mainObjectSizeMean, 2.0);
+  //const double a = std::log (1.0 + (a1 / a2));
+  //const double mu = std::log (m_mainObjectSizeMean) - (0.5 * a);
+  //const double sigma = std::sqrt (a);
+  const double mu = m_mainObjectSizeMean;
+  const double sigma = m_mainObjectSizeStdDev;
   NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_mainObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_mainObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  m_mainObjectSizeRng->SetAttribute ("Mean", DoubleValue (mu));
+  m_mainObjectSizeRng->SetAttribute ("Variance", DoubleValue (sigma * sigma));
 }
 
 void
 ThreeGppHttpVariables::UpdateEmbeddedObjectMuAndSigma (void)
 {
   NS_LOG_FUNCTION (this);
-  const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
+  //const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
+  //const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
+  //const double a = std::log (1.0 + (a1 / a2));
+  //const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
+  //const double sigma = std::sqrt (a);
+  const double mu = m_embeddedObjectSizeMean;
+  const double sigma = m_embeddedObjectSizeStdDev;
   NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_embeddedObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_embeddedObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  m_embeddedObjectSizeRng->SetAttribute ("Mean", DoubleValue (mu));
+  m_embeddedObjectSizeRng->SetAttribute ("Variance", DoubleValue (sigma * sigma));
 }
 
 void
